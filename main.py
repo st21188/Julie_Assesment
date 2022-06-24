@@ -1,4 +1,6 @@
+############################################################################
 #This program is to ensure good data collection of Julie's Party Hire Store#
+############################################################################
 
 #import tkinter
 from tkinter import *
@@ -32,6 +34,113 @@ def print_customer_details ():
         Label(main_window, text=(customer_details[name_count][3])).grid(column=4,row=name_count+11)
         main_window.geometry("")
         name_count += 1
+
+#Check the inputs are all valid
+def append_details ():
+    global customer_details, entry_name, entry_name_first, entry_name_blank, entry_receipt, entry_receipt_string, entry_receipt_blank, entry_receipt_special, entry_item, entry_item_blank, entry_quantity, entry_quantity_blank, entry_quantity_limit, entry_quantity_letter, total_entries
+
+#Check that Full Name is not blank, set error text if blank   
+    if len(re.findall(r'\w+', entry_name.get())) == 0:
+        entry_name_blank.destroy()
+        entry_name_first.destroy()
+        entry_name_blank = Label(main_window,fg="red", text="Sorry - this can't be blank, please enter the customers Full Name")
+        entry_name_blank.grid(row=4, column=2)
+
+ #Check if only first name is entered in the full name entry           
+    if 0 < len(re.findall(r'\w+', entry_name.get())) < 2:
+        entry_name_blank.destroy()
+        entry_name_first.destroy()
+        entry_name_first = Label(main_window, text="Only First name is entered. Enter the customer's Full Name", fg="red")
+        entry_name_first.grid(row=4, column=2)
+        entry_name_blank.destroy()
+        
+    if len(re.findall(r'\w+', entry_name.get())) > 1:
+        entry_name_blank.destroy()
+        entry_name_first.destroy()
+    
+
+#Check that Receipt Number is not blank, set error text if blank     
+    if len(re.findall(r'\w+', entry_receipt.get())) == 0 :
+        entry_receipt_blank.destroy()
+        entry_receipt_string.destroy()
+        entry_receipt_special.destroy()
+        entry_receipt_blank = Label(main_window,fg="red", text="Sorry - this can't be blank, please enter the Receipt Number") .grid(column=5,row=4)
+    
+#Check if there's a letter in the receipt number entry 
+    if len(re.findall(r'\w+', entry_receipt.get())) != 0:  
+        if entry_receipt.get().strip().isdecimal() == False:
+            entry_receipt_blank.destroy()
+            entry_receipt_string.destroy()
+            entry_receipt_special.destroy()
+            receipt_no_string = Label(main_window, text="A letter is entered. Enter the Receipt Number only", fg="red") .grid(row=4, column=5)
+    
+    if len(re.findall(r'\w+', entry_receipt.get())) != 0:     
+        if entry_receipt.get().strip().isalnum() == False:
+            entry_receipt_blank.destroy()
+            entry_receipt_string.destroy()
+            entry_receipt_special.destroy()
+            entry_receipt_string = Label(main_window, text="A special character or a space is entered. Enter the Receipt Number only", fg="red") .grid(row=4, column=5)
+
+    if entry_receipt.get().strip().isdecimal() == True:
+        entry_receipt_blank.destroy()
+        entry_receipt_string.destroy()
+        entry_receipt_special.destroy()
+     
+
+
+ #Check that Item is not blank, set error text if blank     
+    if len(re.findall(r'\w+', entry_item.get())) == 0:
+        entry_item_blank.destroy()
+        Label(main_window,fg="red", text="Sorry - this can't be blank, please enter the Item that was hired") .grid(column=2,row=6)
+     
+    if len(re.findall(r'\w+', entry_item.get())) > 0:
+        entry_item_blank.destroy()
+
+    #Check the number of item/s is not blank and between 1 and 500, set error text if blank  
+    if len(re.findall(r'\w+', entry_quantity.get())) == 0:
+        entry_quantity_blank.destroy()
+        entry_quantity_letter.destroy()
+        entry_quantity_limit.destroy()
+        entry_quantity_blank = Label(main_window, text="Sorry - this can't be blank, please enter the number of item/s hired", fg="red") .grid(row=6, column=5)
+
+#check if quantity is blank 
+    if len(re.findall(r'\w+', entry_quantity.get())) != 0:  
+        entry_quantity_blank.destroy()
+        entry_quantity_letter.destroy()
+        entry_quantity_limit.destroy()
+        
+        #if quanity is not blank then try converting it to an int
+        try:
+             inter = int(entry_quantity.get())
+             if 500 < int(entry_quantity.get()) or int(entry_quantity.get()) < 0:
+                entry_quantity_blank.destroy()
+                entry_quantity_letter.destroy()
+                entry_quantity_limit.destroy()
+                entry_quantity_limit = Label(main_window, text="Invalid value is entered. Please enter a number between 1 - 500", fg="red") .grid(row=6, column=5)
+
+                if 501 > int(entry_quantity.get()) > 0:
+                    entry_quantity_blank.destroy()
+                    entry_quantity_letter.destroy()
+                    entry_quantity_limit.destroy()
+
+        #if quantity cannot be converted to an int then display a custom error message     
+        except ValueError:
+            entry_quantity_letter = Label(main_window, text="Invalid value is entered. Only enter the Quantity", fg="red") .grid(row=6, column=5)
+            
+#Remember to fix issues with .isdecimal identifying spaces
+
+#append details if all requirements are met 
+    if len(re.findall(r'\w+', entry_name.get())) > 1:
+        if entry_receipt.get().strip().isdecimal() == True:
+            if len(re.findall(r'\w+', entry_item.get())) > 0:
+                    if entry_quantity.get().strip().isdecimal() == True: 
+                         if 501 > int(entry_quantity.get()) > 0:
+                            customer_details.append([entry_name.get().title(),entry_receipt.get(),entry_item.get(),entry_quantity.get()]) 
+                            entry_name.delete(0,'end')
+                            entry_receipt.delete(0,'end')
+                            entry_item.delete(0,'end')
+                            entry_quantity.delete(0,'end')
+                            total_entries +=  1
 
 
 
